@@ -24,9 +24,8 @@ set_groundspeed(10)
 # Start part I and II
 # Location B
 
-global vehicle
-b_lat = vehicle.location.global_relative_frame.lat + 0.005
-b_lon = vehicle.location.global_relative_frame.lat + 0.005
+b_lat = get_lat() + 0.005
+b_lon = get_lon() + 0.005
 b_alt = 10
 
 arm_and_takeoff(b_alt)

@@ -12,9 +12,8 @@ from MAVLinkCommands import *
 import time
 
 
-global vehicle
-lat = vehicle.location.global_relative_frame.lat + 0.005
-lon = vehicle.location.global_relative_frame.lat + 0.005
+lat = get_lat() + 0.005
+lon = get_lon() + 0.005
 alt = 10
 speed = 10
 

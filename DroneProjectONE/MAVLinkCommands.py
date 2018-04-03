@@ -240,3 +240,16 @@ def set_airspeed(speed):
     # send command to vehicle
     vehicle.send_mavlink(msg)
     vehicle.flush()
+
+
+#
+# getters
+#
+def get_lat():
+    return vehicle.location.global_relative_frame.lat
+
+def get_lon():
+    return vehicle.location.global_relative_frame.lon
+
+def get_alt():
+    return vehicle.location.global_relative_frame.alt
