@@ -11,8 +11,10 @@ from __future__ import print_function
 from MAVLinkCommands import *
 import time
 
-lat = -35.361879
-lon = 149.166033
+
+global vehicle
+lat = vehicle.location.global_relative_frame.lat + 0.005
+lon = vehicle.location.global_relative_frame.lat + 0.005
 alt = 10
 speed = 10
 
