@@ -7,6 +7,9 @@ import time
 from dronekit import connect, VehicleMode
 from pymavlink import mavutil
 
+#
+#Setup the mavlink parse params and start SITL as well as the initlize the vehicle object
+#
 def mav_steup():
     # Set up option parsing to get connection string
     import argparse
@@ -30,6 +33,9 @@ def mav_steup():
     global vehicle
     vehicle = connect(connection_string, wait_ready=True)
 
+#
+#Close vehicle object and SITL
+#
 def mav_cleanup():
     # Close vehicle object before exiting script
     print("Close vehicle object")
@@ -41,6 +47,9 @@ def mav_cleanup():
     if sitl:
         sitl.stop()
 
+#
+#Returns the Drone to its launch location
+#
 def return_to_launch():
     print("Landing at launch location")
     msg = vehicle.message_factory.command_long_encode(
@@ -69,6 +78,9 @@ def return_to_launch():
     print(" Altitude: ", vehicle.location.global_relative_frame.alt)
     time.sleep(5)
 
+#
+#Starts the Drone and starts the take off
+#
 def arm_and_takeoff(aTargetAltitude):
     print("Basic pre-arm checks")
     # Don't try to arm until autopilot is ready
@@ -111,6 +123,9 @@ def arm_and_takeoff(aTargetAltitude):
     print(" Altitude: ", vehicle.location.global_relative_frame.alt)
     time.sleep(5)
 
+#
+#Lands the drone at it's current location
+#
 def land_here():
     print("Setting LAND mode")
     vehicle.mode = VehicleMode("LAND")
@@ -127,6 +142,7 @@ def land_here():
     print(" Altitude: ", vehicle.location.global_relative_frame.alt)
     time.sleep(5)
 
+#goto reltive to its local lat lon and alt
 def local_goto(lat,lon,alt):
     print("going to ",lat,", ",lon)
     vehicle._master.mav.mission_item_send(
@@ -152,6 +168,9 @@ def local_goto(lat,lon,alt):
     print("Lat:", vehicle.location.global_relative_frame.lat, ", Lon:", vehicle.location.global_relative_frame.lon,", Alt:", vehicle.location.global_relative_frame.alt)
     time.sleep(5)
 
+#
+#goto reltive to sea level
+#
 def global_goto(lat,lon,alt):
     print("going to ", lat, ", ", lon)
     vehicle._master.mav.mission_item_send(
@@ -178,6 +197,9 @@ def global_goto(lat,lon,alt):
           ", Alt:", vehicle.location.global_relative_frame.alt)
     time.sleep(5)
 
+#
+#sets the ground speed
+#
 def set_groundspeed(speed):
     msg = vehicle.message_factory.command_long_encode(
         0,# target system
@@ -197,6 +219,9 @@ def set_groundspeed(speed):
     vehicle.send_mavlink(msg)
     vehicle.flush()
 
+#
+#sets the air speed
+#
 def set_airspeed(speed):
     msg = vehicle.message_factory.command_long_encode(
         0,# target system
