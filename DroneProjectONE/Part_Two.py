@@ -1,200 +1,60 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
+# Kendric Hood, Betis Baheri, Emil Shirima, Govinda Baweja
+# Drone Programming CS 49995-013/ CS 59995-013
+# Project 1.2
+#
+# Write a program to maneuver your drone vehicle as outlined below:
+#
+# I:    Launch the drone vehicle from the Home Location A to an ascending target Location B with gradually increasing velocity
+# II:   Control the drone to stop at Location B for 10 seconds
+# III:  Control the drone to continue at a higher latitude/longitude to a Location C
+# IV:   Control the drone to stop at Location C for 5 seconds
+# V:    Control the drone to continue at the same longitude, but increased latitude to Location D
+# VI:   Control the drone to wait for 5 seconds at Location D
+# VII:  Control the drone to gradually descend from Location D to a new Location E, where E has the same longitude as B, and same latitude as D
+# VIII: Control the drone to gradually descend from Location E to its Home Location A
 
 
 from __future__ import print_function
+from MAVLinkCommands import *
 import time
-from dronekit import connect, VehicleMode, LocationGlobalRelative , Command , LocationGlobal
-from pymavlink import mavutil
-import math
-import subprocess
-# Set up option parsing to get connection string
-import argparse
-parser = argparse.ArgumentParser(description='Commands vehicle using vehicle.simple_goto.')
-parser.add_argument('--connect',
-                    help="Vehicle connection target string. If not specified, SITL automatically started and used.")
-args = parser.parse_args()
 
-connection_string = args.connect
-sitl = None
+mav_steup()
+set_groundspeed(10)
 
+# Start part I and II
+# Location B
 
-# Start SITL if no connection string specified
-if not connection_string:
-    import dronekit_sitl
-    sitl = dronekit_sitl.start_default()
-    connection_string = sitl.connection_string()
+global vehicle
+b_lat = vehicle.location.global_relative_frame.lat + 0.005
+b_lon = vehicle.location.global_relative_frame.lat + 0.005
+b_alt = 10
 
+arm_and_takeoff(b_alt)
+local_goto(b_lat, b_lon, b_alt)
+time.sleep(10)
 
-# Connect to the Vehicle
-print('Connecting to vehicle on: %s' % connection_string)
-vehicle = connect(connection_string, wait_ready=True)
-print("Basic pre-arm checks")
-# Don't try to arm until autopilot is ready
-while not vehicle.is_armable:
-    print(" Waiting for vehicle to initialise...")
-    time.sleep(2)
+# Start part III and IV
+# Location C
+c_lat = b_lat + 0.005
+c_lon = b_lon + 0.005
+c_alt = 10
 
-print("Arming motors")
-# Copter should arm in GUIDED mode
-vehicle.mode = VehicleMode("GUIDED")
-vehicle.armed = True
-# Confirm vehicle armed before attempting to take off
-while not vehicle.armed:
-    print(" Waiting for arming...")
-    time.sleep(2)
-print("Taking off!")
-altitude = float(0.5)
-if math.isnan(altitude) or math.isinf(altitude):
-    raise ValueError("Altitude was NaN or Infinity. Please provide a real number")
-vehicle._master.mav.command_long_send(0, 0, mavutil.mavlink.MAV_CMD_NAV_TAKEOFF,
-0, 0, 0, 0, 0, 0, 0, altitude)
-while True:
-    print(" Altitude: ", vehicle.location.global_relative_frame.alt)
-    # Break and return from function just below target altitude.
-    if vehicle.location.global_relative_frame.alt >= altitude * 0.95:
-        print("Reached target altitude")
-        break
-    time.sleep(8)
-msg = vehicle.message_factory.set_position_target_local_ned_encode(
-    0,       # time_boot_ms (not used)
-0, 0,    # target_system, target_component
-mavutil.mavlink.MAV_FRAME_BODY_NED, # frame
-0b0000111111000111, # type_mask (only speeds enabled)
-0, 0, 0, # x, y, z positions
--10, 20, 10, # x, y, z velocity in m/s
-0, 0, 0, # x, y, z acceleration (not supported yet, ignored in GCS_Mavlink)
-0, 0)   # yaw, yaw_rate (not supported yet, ignored in GCS_Mavlink)
-vehicle.send_mavlink(msg)
-time.sleep(2)
-lat=-35.362001
-lon=149.163904
-frame = mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT
-alt = 30
-vehicle._master.mav.mission_item_send(0, 0, 0, frame,
-                                           mavutil.mavlink.MAV_CMD_NAV_WAYPOINT, 2, 0, 0,
-                                           0, 0, 0, lat, lon,
-                                           alt)
-speed_type = 0 # air speed
-msg = vehicle.message_factory.command_long_encode(
-    0, 0,    # target system, target component
-    mavutil.mavlink.MAV_CMD_DO_CHANGE_SPEED, #command
-    0, #confirmation
-    speed_type, #param 1
-    10, # speed in metres/second
-    -1, 0, 0, 0, 0 #param 3 - 7
-    )
-vehicle.send_mavlink(msg)
-time.sleep(2)
-msg = vehicle.message_factory.command_long_encode(
-    0, 0,    # target system, target component
-    mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT,
-    mavutil.mavlink.MAV_CMD_NAV_LOITER_TIME,
-    10, #param 1
-    0,
-    0, 0, 0, 0, 0
-    )
-vehicle.send_mavlink(msg)
-time.sleep(2)
-time.sleep(65)
-lat=-35.361362
-lon=149.162557
-frame = mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT
-alt = 50
-vehicle._master.mav.mission_item_send(0, 0, 0, frame,
-                                           mavutil.mavlink.MAV_CMD_NAV_WAYPOINT, 2, 0, 0,
-                                           0, 0, 0, lat, lon,
-                                           alt)
-speed_type = 0 # air speed
-msg = vehicle.message_factory.command_long_encode(
-    0, 0,    # target system, target component
-    mavutil.mavlink.MAV_CMD_DO_CHANGE_SPEED, #command
-    0, #confirmation
-    speed_type, #param 1
-    20, # speed in metres/second
-    -1, 0, 0, 0, 0 #param 3 - 7
-    )
-vehicle.send_mavlink(msg)
-time.sleep(2)
-msg = vehicle.message_factory.command_long_encode(
-    0, 0,    # target system, target component
-    mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT,
-    mavutil.mavlink.MAV_CMD_NAV_LOITER_TIME,
-    5, #param 1
-    0,
-    0, 0, 0, 0, 0
-    )
-vehicle.send_mavlink(msg)
-time.sleep(2)
-time.sleep(65)
-lat=-35.360466
-lon=149.162557
-frame = mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT
-alt = 50
-vehicle._master.mav.mission_item_send(0, 0, 0, frame,
-                                           mavutil.mavlink.MAV_CMD_NAV_WAYPOINT, 2, 0, 0,
-                                           0, 0, 0, lat, lon,
-                                           alt)
-speed_type = 0 # air speed
-msg = vehicle.message_factory.command_long_encode(
-    0, 0,    # target system, target component
-    mavutil.mavlink.MAV_CMD_DO_CHANGE_SPEED, #command
-    0, #confirmation
-    speed_type, #param 1
-    20, # speed in metres/second
-    -1, 0, 0, 0, 0 #param 3 - 7
-    )
-vehicle.send_mavlink(msg)
-time.sleep(2)
-msg = vehicle.message_factory.command_long_encode(
-    0, 0,    # target system, target component
-    mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT,
-    mavutil.mavlink.MAV_CMD_NAV_LOITER_TIME,
-    5, #param 1
-    0,
-    0, 0, 0, 0, 0
-    )
-vehicle.send_mavlink(msg)
-time.sleep(2)
-time.sleep(65)
-lat=-35.360466
-lon=149.163904
-frame = mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT
-alt = 20
-vehicle._master.mav.mission_item_send(0, 0, 0, frame,
-                                           mavutil.mavlink.MAV_CMD_NAV_WAYPOINT, 2, 0, 0,
-                                           0, 0, 0, lat, lon,
-                                           alt)
-speed_type = 0 # air speed
-msg = vehicle.message_factory.command_long_encode(
-    0, 0,    # target system, target component
-    mavutil.mavlink.MAV_CMD_DO_CHANGE_SPEED, #command
-    0, #confirmation
-    speed_type, #param 1
-    10, # speed in metres/second
-    -1, 0, 0, 0, 0 #param 3 - 7
-    )
-vehicle.send_mavlink(msg)
-time.sleep(2)
-msg = vehicle.message_factory.command_long_encode(
-    0, 0,    # target system, target component
-    mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT,
-    mavutil.mavlink.MAV_CMD_NAV_LOITER_TIME,
-    5, #param 1
-    0,
-    0, 0, 0, 0, 0
-    )
-vehicle.send_mavlink(msg)
-time.sleep(2)
-time.sleep(65)
-vehicle._master.mav.command_long_send(0, 0,
-                    mavutil.mavlink.MAV_CMD_NAV_RETURN_TO_LAUNCH, 0, 0, 0, 0, 0, 0, 0, 1)
-print("Setting LAND mode...")
-vehicle.mode = VehicleMode("LAND")
-time.sleep(90)
-print("Close vehicle object")
-vehicle.close()
+local_goto(c_lat, c_lon, c_alt)
+time.sleep(5)
 
-# Shut down simulator if it was started.
-if sitl:
-    sitl.stop()
+# Start part V and VI
+# Location D
+d_lat = c_lat + 0.005
+d_lon = c_lon
+d_alt = 10
+
+local_goto(d_lat, d_lon, d_alt)
+time.sleep(5)
+
+# Start part VII
+# Location E
+e_lat = d_lat
+e_lon = b_lon
+e_alt = 10
+
+local_goto(e_lat, e_lon, e_alt)

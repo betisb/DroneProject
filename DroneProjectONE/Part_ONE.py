@@ -1,6 +1,6 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
 #Kendric Hood, Betis Baheri, Emil Shirima, Govinda Baweja
+#Drone Programming CS 49995-013/ CS 59995-013
+#Project 1.1
 
 #Launch the drone vehicle from the Home Location A to an ascending target Location B with gradually increasing velocity
 # Control the drone to stop at B for 10 seconds
@@ -11,15 +11,15 @@ from __future__ import print_function
 from MAVLinkCommands import *
 import time
 
-lat=-35.361879
-lon=149.166033
-alt=10
-speed=10
+lat = -35.361879
+lon = 149.166033
+alt = 10
+speed = 10
 
 mav_steup()
 arm_and_takeoff(alt)
 set_airspeed(speed)
-local_goto(lat,lon,alt)
+local_goto(lat, lon, alt)
 time.sleep(10)
 return_to_launch()
 mav_cleanup()
