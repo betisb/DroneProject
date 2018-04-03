@@ -20,34 +20,39 @@ import time
 
 mav_steup()
 set_groundspeed(10)
-
+ascend = 0.0005
 # Start part I and II
 # Location B
 
-b_lat = get_lat() + 0.005
-b_lon = get_lon() + 0.005
+b_lat = get_lat() + ascend
+b_lon = get_lon() + ascend
 b_alt = 10
 
+print("Taking off from point A")
 arm_and_takeoff(b_alt)
+
 local_goto(b_lat, b_lon, b_alt)
+print("At point B")
 time.sleep(10)
 
 # Start part III and IV
 # Location C
-c_lat = b_lat + 0.005
-c_lon = b_lon + 0.005
+c_lat = b_lat + ascend
+c_lon = b_lon + ascend
 c_alt = 10
 
 local_goto(c_lat, c_lon, c_alt)
+print("At point C")
 time.sleep(5)
 
 # Start part V and VI
 # Location D
-d_lat = c_lat + 0.005
+d_lat = c_lat + ascend
 d_lon = c_lon
 d_alt = 10
 
 local_goto(d_lat, d_lon, d_alt)
+print("At point D")
 time.sleep(5)
 
 # Start part VII
@@ -57,3 +62,8 @@ e_lon = b_lon
 e_alt = 10
 
 local_goto(e_lat, e_lon, e_alt)
+print("At point E")
+
+# Start part VIII
+return_to_launch()
+mav_cleanup()
