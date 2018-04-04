@@ -1,4 +1,4 @@
-#Kendric Hood, Betis Baheri, Emil Shirima, Govinda Baweja
+#Kendric Hood, Betis Baheri, Emil Shirima, Govinda Baweja, Afrah Arishi
 
 #This is a set of functions that run the basic MAVLink commands
 #Anyone can add to this or edit the functions as they see fit.

@@ -1,4 +1,4 @@
-# Kendric Hood, Betis Baheri, Emil Shirima, Govinda Baweja
+# Kendric Hood, Betis Baheri, Emil Shirima, Govinda Baweja, Afrah Arishi
 # Drone Programming CS 49995-013/ CS 59995-013
 # Project 1.2
 #
