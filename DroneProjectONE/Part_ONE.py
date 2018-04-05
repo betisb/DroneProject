@@ -11,13 +11,13 @@ from __future__ import print_function
 from MAVLinkCommands import *
 import time
 
+mav_steup()
 
-lat = get_lat() + 0.005
-lon = get_lon() + 0.005
+lat = get_lat() + 0.0005
+lon = get_lon() + 0.0005
 alt = 10
 speed = 10
 
-mav_steup()
 arm_and_takeoff(alt)
 set_airspeed(speed)
 local_goto(lat, lon, alt)

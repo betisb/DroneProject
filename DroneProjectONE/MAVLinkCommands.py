@@ -241,6 +241,27 @@ def set_airspeed(speed):
     vehicle.send_mavlink(msg)
     vehicle.flush()
 
+# TESTING
+# This method is incomplete
+def set_home(lat,lon,alt):
+    msg = vehicle.message_factory.command_long_encode(
+        0,  # target system
+        0,  # target component
+        mavutil.mavlink.MAV_CMD_DO_SET_HOME,  # command
+        0,  # confirmation
+        2,  # param 1
+        0,  # param 2
+        0,  # param 3
+        0,  # param 4
+        lat,  # param 5
+        lon,  # param 6
+        alt  # param 7
+    )
+
+    # send command to vehicle
+    vehicle.send_mavlink(msg)
+    vehicle.flush()
+
 
 #
 # getters
