@@ -20,7 +20,8 @@ speed = 10
 
 arm_and_takeoff(alt)
 set_airspeed(speed)
-local_goto(lat, lon, alt)
+local_goto(lat, lon, alt,10)
+print("At Point A")
 time.sleep(10)
 return_to_launch()
 mav_cleanup()

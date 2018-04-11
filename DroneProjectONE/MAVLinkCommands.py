@@ -143,7 +143,7 @@ def land_here():
     time.sleep(5)
 
 #goto reltive to its local lat lon and alt
-def local_goto(lat,lon,alt):
+def local_goto(lat,lon,alt,holdTime):
     print("going to ",lat,", ",lon)
     vehicle._master.mav.mission_item_send(
         0,# Target system
@@ -153,7 +153,7 @@ def local_goto(lat,lon,alt):
         mavutil.mavlink.MAV_CMD_NAV_WAYPOINT,# command
         2,# current waypoint number
         0,# auto countue to next waypoint
-        0,# param 1
+        holdTime,# param 1
         0,# param 2
         0,# param 3
         0,# param 4
@@ -171,7 +171,7 @@ def local_goto(lat,lon,alt):
 #
 #goto reltive to sea level
 #
-def global_goto(lat,lon,alt):
+def global_goto(lat,lon,alt,holdTime):
     print("going to ", lat, ", ", lon)
     vehicle._master.mav.mission_item_send(
         0,  # Target system
@@ -181,7 +181,7 @@ def global_goto(lat,lon,alt):
         mavutil.mavlink.MAV_CMD_NAV_WAYPOINT,  # command
         2,  # current waypoint number
         0,  # auto countue to next waypoint
-        0,  # param 1
+        holdTime,  # param 1
         0,  # param 2
         0,  # param 3
         0,  # param 4
